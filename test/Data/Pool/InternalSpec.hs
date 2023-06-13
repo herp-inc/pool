@@ -1,14 +1,14 @@
-{-# language RecordWildCards #-}
-{-# language OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Data.Pool.InternalSpec where
 
 import Control.Monad
-import Test.Hspec
-import Test.Hspec.Hedgehog
+import Data.Pool.Internal
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
-import Data.Pool.Internal
+import Test.Hspec
+import Test.Hspec.Hedgehog
 
 spec :: Spec
 spec = do
@@ -50,13 +50,16 @@ spec = do
               Gen.integral (Range.linear 1 numStripes)
             Nothing ->
               Gen.integral (Range.linear 1 100)
-      void $ evalIO $ newPool PoolConfig
-        { createResource = pure ()
-        , freeResource = \_ -> pure ()
-        , poolCacheTTL = 60.0
-        , poolMaxResources = maxResources
-        , poolNumStripes = mnumStripes
-        }
+      void $
+        evalIO $
+          newPool
+            PoolConfig
+              { createResource = pure ()
+              , freeResource = \_ -> pure ()
+              , poolCacheTTL = 60.0
+              , poolMaxResources = maxResources
+              , poolNumStripes = mnumStripes
+              }
 
 inputs :: Gen Input
 inputs = do

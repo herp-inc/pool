@@ -121,14 +121,15 @@ newPool pc = do
     error "numStripes must be at least 1"
 
   let stripeResourceAllocation =
-        howManyStripes Input
-          { inputMaxResources = poolMaxResources pc
-          , inputStripes = numStripesRequested
-          }
+        howManyStripes
+          Input
+            { inputMaxResources = poolMaxResources pc
+            , inputStripes = numStripesRequested
+            }
       stripeAllocations =
         robin stripeResourceAllocation
       indexedAllocations =
-        zip [1..] stripeAllocations
+        zip [1 ..] stripeAllocations
       numStripes =
         allowedStripes stripeResourceAllocation
 
@@ -182,7 +183,7 @@ data Input = Input
   , inputStripes :: !Int
   -- ^ How many stripes the user requested.
   }
-  deriving Show
+  deriving (Show)
 
 -- | How many stripes to create, respecting the 'inputMaxResources' on the
 -- 'poolInput' field. To create one, use 'howManyStripes'.
@@ -192,7 +193,7 @@ data StripeResourceAllocation = StripeResourceAllocation
   , allowedStripes :: !Int
   -- ^ The amount of stripes to actually create.
   }
-  deriving Show
+  deriving (Show)
 
 -- | Determine how many resources should be allocated to each stripe.
 --
@@ -200,26 +201,25 @@ data StripeResourceAllocation = StripeResourceAllocation
 -- representing the amount of resources available to that stripe.
 robin :: StripeResourceAllocation -> [Int]
 robin stripeResourceAllocation =
-  let
-    numStripes =
-      allowedStripes stripeResourceAllocation
-    (baseCount, remainder) =
-      inputMaxResources (poolInput stripeResourceAllocation)
-        `divMod` numStripes
-  in
-    replicate remainder (baseCount + 1) ++ replicate (numStripes - remainder) baseCount
+  let numStripes =
+        allowedStripes stripeResourceAllocation
+      (baseCount, remainder) =
+        inputMaxResources (poolInput stripeResourceAllocation)
+          `divMod` numStripes
+  in  replicate remainder (baseCount + 1) ++ replicate (numStripes - remainder) baseCount
 
 -- | A stripe must have at least one resource. If the user requested more
 -- stripes than total resources, then we cannot create that many stripes
 -- without exceeding the maximum resource limit.
 howManyStripes :: Input -> StripeResourceAllocation
-howManyStripes inp = StripeResourceAllocation
-  { allowedStripes =
-      if inputStripes inp > inputMaxResources inp
-      then inputMaxResources inp
-      else inputStripes inp
-  , poolInput = inp
-  }
+howManyStripes inp =
+  StripeResourceAllocation
+    { allowedStripes =
+        if inputStripes inp > inputMaxResources inp
+          then inputMaxResources inp
+          else inputStripes inp
+    , poolInput = inp
+    }
 
 -- | Destroy a resource.
 --

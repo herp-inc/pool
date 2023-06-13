@@ -1,11 +1,11 @@
 module Data.PoolSpec where
 
 import Control.Monad
-import Test.Hspec
-import Test.Hspec.Hedgehog
+import Data.Pool
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
-import Data.Pool
+import Test.Hspec
+import Test.Hspec.Hedgehog
 
 spec :: Spec
 spec = do
@@ -14,4 +14,4 @@ spec = do
       numStripes <- forAll $ Gen.integral $ Range.linear 1 100
       idleTime <- forAll $ Gen.realFrac_ $ Range.linearFrac 0.5 100
       maxResources <- forAll $ Gen.integral $ Range.linear 1 100
-      void $  evalIO $ createPool (pure ()) (\_ -> pure ()) numStripes idleTime maxResources
+      void $ evalIO $ createPool (pure ()) (\_ -> pure ()) numStripes idleTime maxResources
