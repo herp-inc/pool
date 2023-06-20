@@ -1,7 +1,7 @@
 cabal-version:       2.4
 build-type:          Simple
 name:                resource-pool
-version:             0.4.0.0
+version:             0.4.1.0-herpinc
 license:             BSD-3-Clause
 license-file:        LICENSE
 category:            Data, Database, Network
